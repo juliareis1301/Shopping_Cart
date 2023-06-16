@@ -1,38 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, {  useEffect, useContext } from 'react';
 import './Products.css';
 import fetchProducts from '../../api/fetchProducts';
 import ProductsCard from '../ProductsCard/ProductsCard';
-import SearchBar from '../Search/SearchBar';
+import Loading from '../Loading/Loading';
+import AppContext from '../context/AppContext';
+
 
 function Products() {
-  const [products, setProducts] = useState([]);
-
-  const handleSearch = async (query) => {
-    try {
-      const results = await fetchProducts(query);
-      setProducts(results);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const {products, setProducts, loading, setLoading} = useContext(AppContext);
 
   useEffect(() => {
     fetchProducts('iphone').then((response) => {
       setProducts(response);
+      setLoading(false);
     });
   }, []);
 
   console.log(products);
 
   return (
-    <div className='products-container'>
-      <SearchBar onSearch={handleSearch} />
-      <section className='products'>
-        {products.map((product) => (
-          <ProductsCard key={product.id} data={product} />
-        ))}
+    (loading && <Loading /> ) || (
+      <section className="products container">
+        {products.map((product) => <ProductsCard key={product.id} data={product} />)}
       </section>
-    </div>
+    )
+    
   );
 }
 
